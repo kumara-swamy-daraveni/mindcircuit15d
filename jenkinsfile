@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Git Repo') {
+            steps {
+                echo 'Cloning Code from Git Repo'
+				git branch: 'main', url: 'https://github.com/kumara-swamy-daraveni/mindcircuit15d.git'
+            }
+        }
+		stage('Build Articat') {
+            steps {
+                echo 'Building artifact using Build tool'
+				sh 'mvn clean install'
+				
+            }
+        }
+		stage('Deploy to tomcat') {
+            steps {
+                echo 'Deploy to tomcat'
+				deploy adapters: [tomcat9(credentialsId: 'tomcatcreds', path: '', url: 'http://54.172.212.229:8080/')], contextPath: 'b15tomcat', war: '**/*.war'
+				
+            }
+        }
+    }
+}
